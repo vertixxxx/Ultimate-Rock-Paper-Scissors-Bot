@@ -65,6 +65,12 @@ Where $\mathbb{I}$ is an indicator function evaluating to $1$ for the observed m
 
 ---
 
+
+
+https://github.com/user-attachments/assets/c8725675-6162-4aa4-a122-651ce945c1d9
+
+
+
 ## Installation & Usage
 
 ### Prerequisites
