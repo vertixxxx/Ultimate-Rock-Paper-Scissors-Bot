@@ -76,6 +76,17 @@ def main():
     running = True
     Markov1_bot = model.Markov1()
     Markov2_bot = model.Markov2()
+    BayesianMarkov_bot = model.BayesianMarkov()
+    #Strategy Pattern to choose bot
+    bots = {
+        "random": None,  # Special case or wrap in a simple class
+        "markov1": Markov1_bot,
+        "markov2": Markov2_bot,
+        "bayesian": BayesianMarkov_bot
+    }
+    active_bot_key = "bayesian"
+
+
     while running:
         # 1. Event Handling
         for event in pygame.event.get():
@@ -85,21 +96,17 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Check if the user clicked on any of the sprites
                 mouse_pos = pygame.mouse.get_pos()
-                print(Markov2_bot.transition_matrix)
+                #print(Markov2_bot.transition_matrix)
 
                 for sprite in choices:
                     if sprite.rect.collidepoint(mouse_pos):
                         player_choice = sprite.name
-                        #1. Random
-                        #computer_choice = random.choice(options)
-
-                        #2. MarkovOrder1
-                        #computer_choice = Markov1_bot.predict_and_play()
-                        #Markov1_bot.update(player_choice)
-
-                        #3. MarkovOrder2
-                        computer_choice = Markov2_bot.predict_and_play()
-                        Markov2_bot.update(player_choice)
+                        bot = bots[active_bot_key]
+                        if bot is None:
+                            computer_choice = random.choice(options)
+                        else:
+                            computer_choice = bot.predict_and_play()
+                            bot.update(player_choice)
 
                         result_text, p_score, c_score = get_result(player_choice, computer_choice, p_score, c_score)
 
