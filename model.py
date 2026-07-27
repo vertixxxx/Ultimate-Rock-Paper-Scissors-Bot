@@ -173,7 +173,7 @@ class BayesianMarkov:
             # Counter the predicted move to win
             return self.counter_moves[predicted_player_move]
 
-        
+
 
         
         
