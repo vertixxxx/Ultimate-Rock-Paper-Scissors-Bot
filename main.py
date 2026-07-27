@@ -11,6 +11,7 @@ WIDTH, HEIGHT = 800, 600
 FPS = 30
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GRAY = (128,128,128)
 
 # Screen setup
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -54,6 +55,13 @@ def get_result(player, computer, p_score, c_score):
         c_score += 1
         return "Computer Wins!", p_score, c_score
 
+def reset_game():
+    """Resets scores, choices, text, and returns fresh bot instances to clear memory."""
+    return (
+        0, 0, None, None, "Game Reset! Click a shape to play.", 
+        model.Markov1(), model.Markov2(), model.BayesianMarkov()
+    )
+
 def main():
     # Create a Sprite Group to hold our clickable options
     choices = pygame.sprite.Group()
@@ -64,6 +72,8 @@ def main():
     scissors = ChoiceSprite("Scissors", 550, 400, (100, 100, 255), small_font, BLACK) # Blueish
 
     choices.add(rock, paper, scissors)
+
+    reset_rect = pygame.Rect(WIDTH - 120, 20, 100, 40)
 
     # Game variables
     options = ["Rock", "Paper", "Scissors"]
@@ -96,7 +106,16 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Check if the user clicked on any of the sprites
                 mouse_pos = pygame.mouse.get_pos()
-                #print(Markov2_bot.transition_matrix)
+
+                if reset_rect.collidepoint(mouse_pos):
+                    p_score, c_score, player_choice, computer_choice, result_text, m1, m2, bm = reset_game()
+                    # Reassign fresh bots to clear their memories
+                    bots["markov1"] = m1
+                    bots["markov2"] = m2
+                    bots["bayesian"] = bm
+                    continue 
+
+                print(active_bot_key)
 
                 for sprite in choices:
                     if sprite.rect.collidepoint(mouse_pos):
@@ -110,11 +129,30 @@ def main():
 
                         result_text, p_score, c_score = get_result(player_choice, computer_choice, p_score, c_score)
 
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    active_bot_key = "random"
+                    print("Active Model: Random")
+                elif event.key == pygame.K_2:
+                    active_bot_key = "markov1"
+                    print("Active Model: Markov Order 1")
+                elif event.key == pygame.K_3:
+                    active_bot_key = "markov2"
+                    print("Active Model: Markov Order 2")
+                elif event.key == pygame.K_4:
+                    active_bot_key = "bayesian"
+                    print("Active Model: Bayesian Markov (Decay)")
+
         # 2. Draw Background
         screen.fill(WHITE)
 
         # 3. Draw Sprites
         choices.draw(screen)
+
+        pygame.draw.rect(screen, GRAY, reset_rect)
+        pygame.draw.rect(screen, BLACK, reset_rect, 2) # Border
+        reset_text = small_font.render("Reset", True, BLACK)
+        screen.blit(reset_text, (reset_rect.x + 18, reset_rect.y + 10))
 
         # 4. Draw UI Text
         if player_choice and computer_choice:
@@ -122,11 +160,15 @@ def main():
             c_text = title_font.render(f"Computer: {computer_choice}", True, BLACK)
             r_text = title_font.render(result_text, True, (200, 0, 0)) # Red text for the result
             score_text = title_font.render(f"{p_score}-{c_score}", True, (0, 0, 0)) 
+            model_text = small_font.render(f"Active Model: {active_bot_key}", True, BLACK)
+
             
             screen.blit(p_text, (50, 100))
             screen.blit(c_text, (450, 100))
             screen.blit(r_text, (WIDTH // 2 - r_text.get_width() // 2, 250))
             screen.blit(score_text, (WIDTH // 2 - score_text.get_width()//2, 200))
+            screen.blit(model_text, (WIDTH // 2 - model_text.get_width() // 2, 30))
+        
 
         else:
             intro_text = title_font.render(result_text, True, BLACK)
