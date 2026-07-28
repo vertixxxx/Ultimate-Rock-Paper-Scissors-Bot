@@ -67,12 +67,19 @@ Where $\mathbb{I}$ is an indicator function evaluating to $1$ for the observed m
 
 
 
-https://github.com/user-attachments/assets/c8725675-6162-4aa4-a122-651ce945c1d9
+
+
+https://github.com/user-attachments/assets/9f0bec95-a848-4b45-aedb-da391ebb5085
+
 
 
 
 ## Installation & Usage
-
+You can change models mid runtime by pressing:
+1-> Random
+2-> Markov Order-1
+3-> Markov Order-2
+4-> Bayesian-Markov
 ### Prerequisites
 * Python 3.8+
 * Pygame
